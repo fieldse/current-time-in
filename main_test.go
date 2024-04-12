@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,4 +46,19 @@ func TestCityCode(t *testing.T) {
 		assert.Equalf(t, tc.expected, res, "expected %s to be %s", tc.expected, res)
 		assert.Equalf(t, tc.numExpected, len(res), "expected %d results, got %d", tc.numExpected, len(res))
 	}
+}
+
+// Test loading the city data from cityMap.json
+func Test_loadCityData(t *testing.T) {
+	data, err := loadCityData()
+	assert.Nilf(t, err, "should load city data without error")
+	assert.NotEmpty(t, data, "data should not be empty")
+	log.Printf("== debug: city data: %v", data)
+}
+
+// Test reading the raw city data from file
+func Test_readCityData(t *testing.T) {
+	data, err := readCityData()
+	assert.Nilf(t, err, "read data file failed: %v", err)
+	assert.NotEmptyf(t, data, "data should not be empty")
 }

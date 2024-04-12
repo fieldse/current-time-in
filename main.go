@@ -4,22 +4,25 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path"
+
+	"log"
 )
 
 // CityData represents a single entry from the cities data table
 type CityData struct {
-	City      string `json:"city"`
-	CityAscii string `json:"city_ascii"`
-	Lat       string `json:"lat"`
-	Lng       string `json:"lng"`
-	Pop       string `json:"pop"`
-	Country   string `json:"country"`
-	Iso2      string `json:"iso2"`
-	Iso3      string `json:"iso3"`
-	Province  string `json:"province"`
-	Timezone  string `json:"timezone"`
+	City      string  `json:"city"`
+	CityAscii string  `json:"city_ascii"`
+	Lat       float32 `json:"lat"`
+	Lng       float32 `json:"lng"`
+	Pop       int     `json:"pop"`
+	Country   string  `json:"country"`
+	Iso2      any     `json:"iso2"` // these sometimes will be "-99" for no obvious reason
+	Iso3      string  `json:"iso3"`
+	Province  string  `json:"province"`
+	Timezone  string  `json:"timezone"`
 }
 
 // tzCodeFor returns a full timezone name for cities matching the given city/country name.
@@ -27,20 +30,29 @@ type CityData struct {
 // from cities matching the name.
 // eg: "London", "London UK", "London United Kingdom" should all return the same result.
 // This will return a slice of results for cities which exist in multiple countries.
-func tzCodeFor(s string) ([]string, error) {
+func tzCodeFor(_ string) ([]string, error) {
 	return []string{""}, errors.New("not implemented")
 }
 
-// loadCityData loads the city data from from cityMap.json
-func loadCityData() ([]CityData, error) {
-	var cityData []CityData
+// readCityData reads the raw data from cityMap.json to bytes
+func readCityData() ([]byte, error) {
 	b, err := os.ReadFile(path.Join(".", "data", "cityMap.json"))
 	if err != nil {
-		return []CityData{}, errors.New("error reading city data")
+		log.Printf("failed to read cityMap.json: %v", err)
+	}
+	return b, err
+}
+
+// loadCityData loads the city data from cityMap.json
+func loadCityData() ([]CityData, error) {
+	var cityData []CityData
+	b, err := readCityData()
+	if err != nil {
+		return []CityData{}, fmt.Errorf("failed to read city data: %w", err)
 	}
 	err = json.Unmarshal(b, &cityData)
 	if err != nil {
-		return []CityData{}, errors.New("error parsing city data")
+		return []CityData{}, fmt.Errorf("error parsing city data: %w", err)
 	}
 	return cityData, nil
 }
