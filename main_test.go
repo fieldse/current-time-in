@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/go-playground/assert/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 // Test the city returns a correct city/country code by name
@@ -39,6 +39,6 @@ func TestCityCode(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		assert.Equal(t, tc.name, tc.expected)
+		assert.Equalf(t, tc.expected, tc.name, "expected %s to be %s", tc.expected, tc.name)
 	}
 }
