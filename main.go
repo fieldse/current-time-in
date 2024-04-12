@@ -17,7 +17,7 @@ type CityData struct {
 	CityAscii string  `json:"city_ascii"`
 	Lat       float32 `json:"lat"`
 	Lng       float32 `json:"lng"`
-	Pop       int     `json:"pop"`
+	Pop       float32 `json:"pop"`
 	Country   string  `json:"country"`
 	Iso2      any     `json:"iso2"` // these sometimes will be "-99" for no obvious reason
 	Iso3      string  `json:"iso3"`
@@ -55,4 +55,14 @@ func loadCityData() ([]CityData, error) {
 		return []CityData{}, fmt.Errorf("error parsing city data: %w", err)
 	}
 	return cityData, nil
+}
+
+// findCityExact finds a single city matching exactly by name
+func findCityExact(rows []CityData, s string) (CityData, error) {
+	for _, r := range rows {
+		if r.City == s {
+			return r, nil
+		}
+	}
+	return CityData{}, fmt.Errorf("city not found: %s", s)
 }
