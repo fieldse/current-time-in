@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path"
-
-	"log"
 )
 
 // CityData represents a single entry from the cities data table
