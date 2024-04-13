@@ -3,12 +3,14 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"path"
+	"time"
 )
 
-const LOGFILE_NAME = "log.txt"
-
+// Logs dir is at /logs
 var (
 	InfoLogger  *log.Logger
 	ErrorLogger *log.Logger
@@ -17,18 +19,23 @@ var (
 
 // Initialize the three loggers
 func init() {
-	InfoLogger = makeLogger("[+]")
-	ErrorLogger = makeLogger("[ERROR]")
-	DebugLogger = makeLogger("[DEBUG]")
+	// logs-YYYY-MM-DD.log
+	logFile := path.Join("logs", fmt.Sprintf("logs-%s.log", time.Now().Format("2006-01-02")))
+	InfoLogger = makeLogger(logFile, "[+]")
+	ErrorLogger = makeLogger(logFile, "[ERROR]")
+	DebugLogger = makeLogger(logFile, "[DEBUG]")
 }
 
-// makeLogger returns a new logger instance that writes to outfile (log.txt)
-func makeLogger(prefix string) *log.Logger {
-	file, err := os.OpenFile(LOGFILE_NAME, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+// makeLogger returns a new logger instance that writes to both STDOUT and logfile (log.txt)
+func makeLogger(logFile string, prefix string) *log.Logger {
+	file, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatalf("initialize logger failed: %v", err)
 	}
-	return log.New(file, prefix+" ", log.Ldate|log.Ltime|log.Lshortfile)
+	// Open multiwriter to log both to console and to file
+	mw := io.MultiWriter(os.Stdout, file)
+
+	return log.New(mw, prefix+" ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 // Log logs a standard info-level message to file
