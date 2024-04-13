@@ -70,4 +70,5 @@ func Test_findCityExact(t *testing.T) {
 	res, err := findCityExact(data, "New York")
 	assert.Nil(t, err)
 	assert.Equalf(t, "New York", res.City, "name should match")
+	LogDebug("city result: %v", res.City)
 }
