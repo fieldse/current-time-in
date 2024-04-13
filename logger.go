@@ -44,5 +44,5 @@ func LogDebug(msg string, args ...interface{}) {
 // LogError logs an error message to file
 func LogError(err error, msg string, args ...interface{}) {
 	msg = fmt.Sprintf(msg, args...)
-	ErrorLogger.Printf(fmt.Sprintf("%s: %w", msg, err.Error))
+	ErrorLogger.Printf(fmt.Sprintf("%s: %v", msg, err.Error()))
 }
