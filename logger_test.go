@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const testLogFile = "test.log"
@@ -33,7 +34,7 @@ func Test_Log(t *testing.T) {
 
 	// Log message. File should exist
 	testLogger.Info("example log message")
-	assert.FileExistsf(t, testLogFile, "test log file should exist")
+	require.FileExistsf(t, testLogFile, "test log file should exist")
 
 	// Read content
 	data, err := os.ReadFile(testLogFile)
