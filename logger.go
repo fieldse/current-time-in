@@ -10,23 +10,54 @@ import (
 	"time"
 )
 
-// Logs dir is at /logs
 var (
-	InfoLogger  *log.Logger
-	ErrorLogger *log.Logger
-	DebugLogger *log.Logger
+	Logger *AppLogger
 )
 
-// Initialize the three loggers
-func init() {
-	// logs-YYYY-MM-DD.log
-	logFile := path.Join("logs", fmt.Sprintf("logs-%s.log", time.Now().Format("2006-01-02")))
-	InfoLogger = makeLogger(logFile, "[+]")
-	ErrorLogger = makeLogger(logFile, "[ERROR]")
-	DebugLogger = makeLogger(logFile, "[DEBUG]")
+type AppLogger struct {
+	logfile     string
+	infoLogger  *log.Logger
+	errorLogger *log.Logger
+	debugLogger *log.Logger
 }
 
-// makeLogger returns a new logger instance that writes to both STDOUT and logfile (log.txt)
+func init() {
+	f := path.Join("logs", logfileName())
+	Logger = AppLogger{}.New(f)
+}
+
+// logfileName is a dated logfile name in format "logs-[YYYY-MM-DD].log"
+func logfileName() string {
+	return fmt.Sprintf("logs-%s.log", time.Now().Format("2006-01-02"))
+}
+
+// New initializes the logger with info, debug, and error loggers.
+func (l AppLogger) New(logFile string) *AppLogger {
+	return &AppLogger{
+		logfile:     logFile,
+		infoLogger:  makeLogger(logFile, "[+]"),
+		errorLogger: makeLogger(logFile, "[ERROR]"),
+		debugLogger: makeLogger(logFile, "[DEBUG]"),
+	}
+}
+
+// Info logs a standard info-level message to file
+func (l *AppLogger) Info(msg string, args ...interface{}) {
+	l.infoLogger.Printf(msg, args...)
+}
+
+// Debug logs a debug-level message to file
+func (l *AppLogger) Debug(msg string, args ...interface{}) {
+	l.debugLogger.Printf(msg, args...)
+}
+
+// Error logs an error message to file
+func (l *AppLogger) Error(err error, msg string, args ...interface{}) {
+	msg = fmt.Sprintf(msg, args...)
+	l.errorLogger.Printf(fmt.Sprintf("%s: %v", msg, err.Error()))
+}
+
+// makeLogger returns a new log.Logger instance that writes to both STDOUT and logfile
 func makeLogger(logFile string, prefix string) *log.Logger {
 	file, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
@@ -36,20 +67,4 @@ func makeLogger(logFile string, prefix string) *log.Logger {
 	mw := io.MultiWriter(os.Stdout, file)
 
 	return log.New(mw, prefix+" ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
-// Log logs a standard info-level message to file
-func Log(msg string, args ...interface{}) {
-	InfoLogger.Printf(msg, args...)
-}
-
-// LogDebug logs a debug-level message to file
-func LogDebug(msg string, args ...interface{}) {
-	DebugLogger.Printf(msg, args...)
-}
-
-// LogError logs an error message to file
-func LogError(err error, msg string, args ...interface{}) {
-	msg = fmt.Sprintf(msg, args...)
-	ErrorLogger.Printf(fmt.Sprintf("%s: %v", msg, err.Error()))
 }
