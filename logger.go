@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"log/slog"
 	"os"
 	"time"
@@ -19,22 +20,31 @@ type TeeWriter struct {
 	file   *os.File
 }
 
+func (t TeeWriter) New(logfile string) *TeeWriter {
+	file, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Panicf("failed to open logfile: %v", err)
+	}
+	return &TeeWriter{
+		stdout: os.Stdout,
+		file:   file,
+	}
+}
+
+// Write writes a message to both stdout and to file
 func (t *TeeWriter) Write(p []byte) (n int, err error) {
 	n, err = t.stdout.Write(p)
 	if err != nil {
 		return n, err
 	}
 	n, err = t.file.Write(p)
+	t.file.Sync()
 	return n, err
 }
 
 // New creates a new AppLogger, which will write to stdout and logfile
 func (l AppLogger) New(logfile string) *AppLogger {
-	file, _ := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_SYNC, 0666)
-	writer := &TeeWriter{
-		stdout: os.Stdout,
-		file:   file,
-	}
+	writer := TeeWriter{}.New(logfile)
 	handler := slog.NewTextHandler(writer, nil)
 	logger := slog.New(handler)
 	return &AppLogger{logger}
