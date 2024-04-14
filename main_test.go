@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+
+	log "github.com/sirupsen/logrus"
+
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,11 +53,10 @@ func TestCityCode(t *testing.T) {
 
 // Test loading the city data from cityMap.json
 func Test_loadCityData(t *testing.T) {
-	defer cleanup()
 	data, err := loadCityData()
 	assert.Nilf(t, err, "should load city data without error")
 	assert.NotEmpty(t, data, "data should not be empty")
-	testLogger.Debug(fmt.Sprintf("city data: %v", data))
+	log.Debug(fmt.Sprintf("city data: %v", data))
 }
 
 // Test reading the raw city data from file
@@ -65,7 +67,6 @@ func Test_readCityData(t *testing.T) {
 }
 
 func Test_findCityExact(t *testing.T) {
-	defer cleanup()
 	data, err := loadCityData()
 	if err != nil {
 		panic(err)
@@ -73,5 +74,9 @@ func Test_findCityExact(t *testing.T) {
 	res, err := findCityExact(data, "New York")
 	assert.Nil(t, err)
 	assert.Equalf(t, "New York", res.City, "name should match")
-	testLogger.Debug(fmt.Sprintf("city result: %v", res.City))
+	log.Debug(fmt.Sprintf("city result: %v", res.City))
+}
+
+func Test_testLog(t *testing.T) {
+	log.Info("testing logging")
 }

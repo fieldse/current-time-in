@@ -9,14 +9,6 @@ import (
 	"path"
 )
 
-var Logger *AppLogger
-
-// Initialize app logger
-func init() {
-	logFile := path.Join("logs", logfileName())
-	Logger = AppLogger{}.New(logFile)
-}
-
 // CityData represents a single entry from the cities data table
 type CityData struct {
 	City      string  `json:"city"`
