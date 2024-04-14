@@ -5,10 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path"
 )
+
+var Logger *AppLogger
+
+// Initialize app logger
+func init() {
+	logFile := path.Join("logs", logfileName())
+	Logger = AppLogger{}.New(logFile)
+}
 
 // CityData represents a single entry from the cities data table
 type CityData struct {
@@ -37,9 +44,9 @@ func tzCodeFor(_ string) ([]string, error) {
 func readCityData() ([]byte, error) {
 	b, err := os.ReadFile(path.Join(".", "data", "cityMap.json"))
 	if err != nil {
-		log.Printf("failed to read cityMap.json: %v", err)
+		return []byte{}, fmt.Errorf("failed to read cityMap.json: %w", err)
 	}
-	return b, err
+	return b, nil
 }
 
 // loadCityData loads the city data from cityMap.json
