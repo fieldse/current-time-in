@@ -30,10 +30,9 @@ func Test_Log(t *testing.T) {
 
 	// File doesn't exist
 	assert.NoFileExistsf(t, testLogFile, "test log file should not exist")
-	testLogger := makeLogger(testLogFile, "[TEST]")
 
 	// Log message. File should exist
-	testLogger.Println("example log message")
+	testLogger.Info("example log message")
 	assert.FileExistsf(t, testLogFile, "test log file should exist")
 
 	// Read content
@@ -43,6 +42,15 @@ func Test_Log(t *testing.T) {
 
 	// Message should be in content, and have prefix
 	var s = string(data)
-	assert.Truef(t, strings.HasPrefix(s, "[TEST]"), "log message should start with prefix")
+	assert.Truef(t, strings.HasPrefix(s, "[+]"), "log message should start with prefix")
 	assert.Containsf(t, s, "example log message", "log message should exists in log file")
+
+	// Test debug message
+	testLogger.Debug("example debug message")
+	data, _ = os.ReadFile(testLogFile)
+	s = string(data)
+	assert.Containsf(t, s, "example log message", "original log message should still exists in log file")
+	assert.Containsf(t, s, "[DEBUG]", "debug prefix should exist in log file")
+	assert.Containsf(t, s, "example debug message", "debug message should exist in log file")
+
 }
