@@ -12,6 +12,8 @@ import (
 
 const testLogFile = "test.log"
 
+var testLogger = AppLogger{}.New(testLogFile)
+
 // Remove any files if already existing
 func setup() {
 	cleanup()

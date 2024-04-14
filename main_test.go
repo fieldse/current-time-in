@@ -49,10 +49,11 @@ func TestCityCode(t *testing.T) {
 
 // Test loading the city data from cityMap.json
 func Test_loadCityData(t *testing.T) {
+	defer cleanup()
 	data, err := loadCityData()
 	assert.Nilf(t, err, "should load city data without error")
 	assert.NotEmpty(t, data, "data should not be empty")
-	LogDebug("city data: %v", data)
+	testLogger.Debug("city data: %v", data)
 }
 
 // Test reading the raw city data from file
@@ -63,6 +64,7 @@ func Test_readCityData(t *testing.T) {
 }
 
 func Test_findCityExact(t *testing.T) {
+	defer cleanup()
 	data, err := loadCityData()
 	if err != nil {
 		panic(err)
@@ -70,5 +72,5 @@ func Test_findCityExact(t *testing.T) {
 	res, err := findCityExact(data, "New York")
 	assert.Nil(t, err)
 	assert.Equalf(t, "New York", res.City, "name should match")
-	LogDebug("city result: %v", res.City)
+	testLogger.Debug("city result: %v", res.City)
 }
