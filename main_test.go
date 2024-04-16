@@ -53,7 +53,7 @@ func Test_loadCityData(t *testing.T) {
 	data, err := loadCityData()
 	assert.Nilf(t, err, "should load city data without error")
 	assert.NotEmpty(t, data, "data should not be empty")
-	testLogger.Debug("city data: %v", data)
+	Logger.Debug().Msgf("city data: %v", data)
 }
 
 // Test reading the raw city data from file
@@ -72,5 +72,5 @@ func Test_findCityExact(t *testing.T) {
 	res, err := findCityExact(data, "New York")
 	assert.Nil(t, err)
 	assert.Equalf(t, "New York", res.City, "name should match")
-	testLogger.Debug("city result: %v", res.City)
+	Logger.Debug().Msgf("city result: %v", res.City)
 }
