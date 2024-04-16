@@ -8,14 +8,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const testLogFile = "test.log"
-
-// Remove any files if already existing
-func setup() {
-	cleanup()
-}
 
 func cleanup() {
 	fmt.Println("cleaning up test logfiles...")
@@ -23,7 +19,6 @@ func cleanup() {
 }
 
 func Test_Log(t *testing.T) {
-	setup()
 	defer cleanup()
 
 	// File doesn't exist
@@ -31,13 +26,13 @@ func Test_Log(t *testing.T) {
 	testLogger := makeLogger(testLogFile)
 
 	// Log message. File should exist
-	testLogger.Println("example log message")
+	testLogger.Log().Msg(("example log message"))
 	assert.FileExistsf(t, testLogFile, "test log file should exist")
 
 	// Read content
 	data, err := os.ReadFile(testLogFile)
-	assert.Nilf(t, err, "read file error %v", err)
-	assert.NotEmpty(t, data)
+	require.Nilf(t, err, "read file error %v", err)
+	require.NotEmpty(t, data)
 
 	// Message should be in content, and have prefix
 	var s = string(data)
