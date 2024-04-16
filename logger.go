@@ -38,8 +38,5 @@ func makeLogger(logFile string) zerolog.Logger {
 	if err != nil {
 		panic(err)
 	}
-
-	defer file.Close()
-
 	return zerolog.New(file).Level(LOGGER_LEVEL_DEBUG).With().Timestamp().Logger()
 }
