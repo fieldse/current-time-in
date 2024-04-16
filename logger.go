@@ -15,17 +15,14 @@ var (
 	LogFile string
 )
 
-const YYYYMMDD string = "2006-01-02"
-const LOGGER_LEVEL_DEBUG = zerolog.DebugLevel
+const (
+	YYYYMMDD           string = "2006-01-02"
+	LOGGER_LEVEL_DEBUG        = zerolog.DebugLevel
+)
 
 func init() {
-	LogFile = logfileCurrentDate()
-	Logger = makeLogger(path.Join("logs", LogFile))
-}
-
-// logfileCurrentDate returns logfile name in format "logs-[YYYY-MM-DD].log"
-func logfileCurrentDate() string {
-	return fmt.Sprintf("logs-%s.log", time.Now().Format(YYYYMMDD))
+	LogFile = path.Join("logs", logfileCurrentDate())
+	Logger = makeLogger(LogFile)
 }
 
 // makeLogger returns a new log.Logger instance that writes to both STDOUT and logfile
@@ -39,4 +36,9 @@ func makeLogger(logFile string) zerolog.Logger {
 		panic(err)
 	}
 	return zerolog.New(file).Level(LOGGER_LEVEL_DEBUG).With().Timestamp().Logger()
+}
+
+// logfileCurrentDate returns logfile name in format "logs-[YYYY-MM-DD].log"
+func logfileCurrentDate() string {
+	return fmt.Sprintf("logs-%s.log", time.Now().Format(YYYYMMDD))
 }
