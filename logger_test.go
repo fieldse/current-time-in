@@ -4,7 +4,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,29 +12,55 @@ import (
 
 const testLogFile = "test.log"
 
+func setup() {
+	cleanup()
+}
+
 func cleanup() {
 	fmt.Println("cleaning up test logfiles...")
 	os.Remove(testLogFile)
 }
 
 func Test_Log(t *testing.T) {
+	setup()
 	defer cleanup()
 
 	// File doesn't exist
 	assert.NoFileExistsf(t, testLogFile, "test log file should not exist")
 	testLogger := makeLogger(testLogFile)
 
-	// Log message. File should exist
-	testLogger.Log().Msg(("example log message"))
+	// Log a standard message
+	exampleMsg := "example log message"
+	testLogger.Log().Msg(exampleMsg)
+
+	// File should now exist
 	assert.FileExistsf(t, testLogFile, "test log file should exist")
 
 	// Read content
 	data, err := os.ReadFile(testLogFile)
 	require.Nilf(t, err, "read file error %v", err)
-	require.NotEmpty(t, data)
 
-	// Message should be in content, and have prefix
-	var s = string(data)
-	assert.Truef(t, strings.HasPrefix(s, "[TEST]"), "log message should start with prefix")
-	assert.Containsf(t, s, "example log message", "log message should exists in log file")
+	// Message should be in content
+	s := string(data)
+	require.NotEmpty(t, data)
+	assert.Containsf(t, s, exampleMsg, "log message should exists in log file")
+
+	// Log a debug message
+	testLogger.Debug().Msg(("example debug message"))
+
+	// Message and level should be in content
+	data, _ = os.ReadFile(testLogFile)
+	s = string(data)
+	assert.Containsf(t, s, "\"debug\"", "log message should contain debug level")
+	assert.Containsf(t, s, "example debug message", "log message should exists in log file")
+
+	// Log a warn message
+	warnMessage := "warning: something bad"
+	testLogger.Warn().Msg((warnMessage))
+
+	// Message and level should be in content
+	data, _ = os.ReadFile(testLogFile)
+	s = string(data)
+	assert.Containsf(t, s, "\"warn\"", "log message should contain warn level")
+	assert.Containsf(t, s, warnMessage, "log message should exists in log file")
 }
