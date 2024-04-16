@@ -25,12 +25,18 @@ func Test_Log(t *testing.T) {
 	setup()
 	defer cleanup()
 
+	const (
+		exampleMsg   = "example log message"
+		infoMessage  = "example Info message"
+		debugMessage = "example debug message"
+		warnMessage  = "warning: something bad"
+	)
+
 	// File doesn't exist
 	assert.NoFileExistsf(t, testLogFile, "test log file should not exist")
 	testLogger := makeLogger(testLogFile)
 
 	// Log a standard message
-	exampleMsg := "example log message"
 	testLogger.Log().Msg(exampleMsg)
 
 	// File should now exist
@@ -45,18 +51,26 @@ func Test_Log(t *testing.T) {
 	require.NotEmpty(t, data)
 	assert.Containsf(t, s, exampleMsg, "log message should exists in log file")
 
-	// Log a debug message
-	testLogger.Debug().Msg(("example debug message"))
+	// Log an info level message
+	testLogger.Info().Msg(infoMessage)
+
+	// Message and level should be in content
+	data, _ = os.ReadFile(testLogFile)
+	s = string(data)
+	assert.Containsf(t, s, "\"info\"", "log message should contain info level")
+	assert.Containsf(t, s, infoMessage, "log message should exists in log file")
+
+	// Log a debug level message
+	testLogger.Debug().Msg(debugMessage)
 
 	// Message and level should be in content
 	data, _ = os.ReadFile(testLogFile)
 	s = string(data)
 	assert.Containsf(t, s, "\"debug\"", "log message should contain debug level")
-	assert.Containsf(t, s, "example debug message", "log message should exists in log file")
+	assert.Containsf(t, s, debugMessage, "log message should exists in log file")
 
-	// Log a warn message
-	warnMessage := "warning: something bad"
-	testLogger.Warn().Msg((warnMessage))
+	// Log a warn level message
+	testLogger.Warn().Msg(warnMessage)
 
 	// Message and level should be in content
 	data, _ = os.ReadFile(testLogFile)
