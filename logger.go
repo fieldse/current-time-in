@@ -16,6 +16,7 @@ var (
 )
 
 const YYYYMMDD string = "2006-01-02"
+const LOGGER_LEVEL_DEBUG = zerolog.DebugLevel
 
 func init() {
 	LogFile = logfileCurrentDate()
@@ -40,6 +41,5 @@ func makeLogger(logFile string) zerolog.Logger {
 
 	defer file.Close()
 
-	return zerolog.New(file).With().Timestamp().Logger()
-
+	return zerolog.New(file).Level(LOGGER_LEVEL_DEBUG).With().Timestamp().Logger()
 }
