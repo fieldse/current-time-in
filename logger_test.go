@@ -12,8 +12,6 @@ import (
 
 const testLogFile = "test.log"
 
-var testLogger = AppLogger{}.New(testLogFile)
-
 // Remove any files if already existing
 func setup() {
 	cleanup()
@@ -30,7 +28,7 @@ func Test_Log(t *testing.T) {
 
 	// File doesn't exist
 	assert.NoFileExistsf(t, testLogFile, "test log file should not exist")
-	testLogger := makeLogger(testLogFile, "[TEST]")
+	testLogger := makeLogger(testLogFile)
 
 	// Log message. File should exist
 	testLogger.Println("example log message")
