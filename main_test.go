@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -52,7 +53,7 @@ func Test_loadCityData(t *testing.T) {
 	data, err := loadCityData()
 	assert.Nilf(t, err, "should load city data without error")
 	assert.NotEmpty(t, data, "data should not be empty")
-	Logger.Debug().Msgf("city data: %v", data)
+	Logger.Debug().Msgf("city data: %v", Truncate(fmt.Sprintf("%v", data), 1000))
 }
 
 // Test reading the raw city data from file
