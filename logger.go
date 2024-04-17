@@ -15,10 +15,7 @@ var (
 	LogFile string
 )
 
-const (
-	LOGGER_LEVEL_DEFAULT = zerolog.InfoLevel // Global logger level
-	LOGGER_LEVEL_DEBUG   = zerolog.DebugLevel
-)
+const LOGGER_LEVEL_DEBUG = zerolog.DebugLevel
 
 func init() {
 	LogFile = path.Join("logs", logfileCurrentDate())
