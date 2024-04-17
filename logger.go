@@ -16,8 +16,8 @@ var (
 )
 
 const (
-	YYYYMMDD           string = "2006-01-02"
-	LOGGER_LEVEL_DEBUG        = zerolog.DebugLevel
+	LOGGER_LEVEL_DEFAULT = zerolog.InfoLevel // Global logger level
+	LOGGER_LEVEL_DEBUG   = zerolog.DebugLevel
 )
 
 func init() {
@@ -35,10 +35,19 @@ func makeLogger(logFile string) zerolog.Logger {
 	if err != nil {
 		panic(err)
 	}
-	return zerolog.New(file).Level(LOGGER_LEVEL_DEBUG).With().Timestamp().Logger()
+
+	// Multi-out logger
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+	output := zerolog.MultiLevelWriter(consoleWriter, file)
+
+	return zerolog.New(output).Level(LOGGER_LEVEL_DEBUG).
+		With().
+		Timestamp().
+		Caller().
+		Logger()
 }
 
 // logfileCurrentDate returns logfile name in format "logs-[YYYY-MM-DD].log"
 func logfileCurrentDate() string {
-	return fmt.Sprintf("logs-%s.log", time.Now().Format(YYYYMMDD))
+	return fmt.Sprintf("logs-%s.log", time.Now().Format(time.DateOnly))
 }

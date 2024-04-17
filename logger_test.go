@@ -21,7 +21,7 @@ func cleanup() {
 	os.Remove(testLogFile)
 }
 
-func Test_Log(t *testing.T) {
+func Test_Logger(t *testing.T) {
 	setup()
 	defer cleanup()
 
