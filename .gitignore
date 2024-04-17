@@ -1,5 +1,10 @@
 # VSCode
 *.code-workspace
+.vscode
 
 # MacOS
 .DS_Store
+
+# Logs
+*.log
+**/logs/
