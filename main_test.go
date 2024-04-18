@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,11 +50,10 @@ func TestCityCode(t *testing.T) {
 
 // Test loading the city data from cityMap.json
 func Test_loadCityData(t *testing.T) {
-	defer cleanup()
 	data, err := loadCityData()
 	assert.Nilf(t, err, "should load city data without error")
 	assert.NotEmpty(t, data, "data should not be empty")
-	testLogger.Debug("city data: %v", data)
+	Logger.Debug().Msgf("city data: %v", Truncate(fmt.Sprintf("%v", data), 1000))
 }
 
 // Test reading the raw city data from file
@@ -64,7 +64,6 @@ func Test_readCityData(t *testing.T) {
 }
 
 func Test_findCityExact(t *testing.T) {
-	defer cleanup()
 	data, err := loadCityData()
 	if err != nil {
 		panic(err)
@@ -72,5 +71,5 @@ func Test_findCityExact(t *testing.T) {
 	res, err := findCityExact(data, "New York")
 	assert.Nil(t, err)
 	assert.Equalf(t, "New York", res.City, "name should match")
-	testLogger.Debug("city result: %v", res.City)
+	Logger.Debug().Msgf("city result: %v", res.City)
 }
