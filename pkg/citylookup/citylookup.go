@@ -1,5 +1,5 @@
 // Get the current time in a given city
-package main
+package citylookup
 
 import (
 	"github.com/fieldse/current-time-in/pkg/logger"

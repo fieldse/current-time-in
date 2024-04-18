@@ -1,5 +1,5 @@
 // Miscellaneous small helpers
-package main
+package citylookup
 
 // Truncate truncates a string to given maximum length
 func Truncate(s string, chars int) string {
