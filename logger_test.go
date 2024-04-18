@@ -2,47 +2,128 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
-	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/suite"
 )
 
-const testLogFile = "test.log"
+const (
+	TESTING_LOGFILE = "test.log"
+	exampleMsg      = "example log message"
+	infoMessage     = "example Info message"
+	debugMessage    = "example debug message"
+	warnMessage     = "warning: something bad"
+)
 
-var testLogger = AppLogger{}.New(testLogFile)
-
-// Remove any files if already existing
-func setup() {
-	cleanup()
+// LoggerTests is a suite of tests for logging functions
+type LoggerTests struct {
+	suite.Suite
+	testLogger zerolog.Logger
+	logFile    string
 }
 
-func cleanup() {
-	fmt.Println("cleaning up test logfiles...")
-	os.Remove(testLogFile)
+// Run all tests
+func TestLoggerSuite(t *testing.T) {
+	log.Println("TestLoggerSuite()")
+	suite.Run(t, new(LoggerTests))
 }
 
-func Test_Log(t *testing.T) {
-	setup()
-	defer cleanup()
+// TestLogFileExists test the logfile is created correctly
+func (t *LoggerTests) TestLogFileExists() {
+	log.Println("TestLogFileExists()")
+
+	foo := "foo-test.log"
+	defer os.Remove(foo)
 
 	// File doesn't exist
-	assert.NoFileExistsf(t, testLogFile, "test log file should not exist")
-	testLogger := makeLogger(testLogFile, "[TEST]")
+	t.Assert().NoFileExistsf(foo, "test log file should not exist")
 
-	// Log message. File should exist
-	testLogger.Println("example log message")
-	assert.FileExistsf(t, testLogFile, "test log file should exist")
+	// Make logger -file should now exist
+	makeLogger(foo)
+	t.Require().FileExists(foo)
+}
 
-	// Read content
-	data, err := os.ReadFile(testLogFile)
-	assert.Nilf(t, err, "read file error %v", err)
-	assert.NotEmpty(t, data)
+// TestLogDefault tests logging an Default-level message
+func (t *LoggerTests) TestLogMsg() {
+	log.Println("TestLogMsg()")
+	msg := exampleMsg
 
-	// Message should be in content, and have prefix
-	var s = string(data)
-	assert.Truef(t, strings.HasPrefix(s, "[TEST]"), "log message should start with prefix")
-	assert.Containsf(t, s, "example log message", "log message should exists in log file")
+	// Log a standard message
+	t.testLogger.Log().Msg(msg)
+
+	// Message and level should be in content
+	s := t.readTestFile()
+	t.Assert().Containsf(s, msg, "log message should exists in log file")
+}
+
+// TestLogInfo tests logging an info-level message
+func (t *LoggerTests) TestLogInfo() {
+	log.Println("TestLogInfo()")
+
+	msg := infoMessage
+	lvl := `"level":"info"`
+
+	// Log an info level message
+	t.testLogger.Info().Msg(infoMessage)
+
+	// Message and level should be in content
+	s := t.readTestFile()
+	t.Assert().Containsf(s, lvl, "log message should contain level %s", lvl)
+	t.Assert().Containsf(s, msg, "log message should exists in log file")
+}
+
+// TestLogInfo tests logging an debug-level message
+func (t *LoggerTests) TestLogDebug() {
+	log.Println("TestLogDebug()")
+	msg := debugMessage
+	lvl := `"level":"debug"`
+
+	// Log an debug level message
+	t.testLogger.Debug().Msg(debugMessage)
+
+	// Message and level should be in content
+	s := t.readTestFile()
+	t.Assert().Containsf(s, lvl, "log message should contain level %s", lvl)
+	t.Assert().Containsf(s, msg, "log message should exists in log file")
+}
+
+// TestLogWarn tests logging an warn-level message
+func (t *LoggerTests) TestLogWarn() {
+	log.Println("TestLogWarn()")
+	msg := warnMessage
+	lvl := `"level":"warn"`
+
+	// Log a warn level message
+	t.testLogger.Warn().Msg(warnMessage)
+
+	// Message and level should be in content
+	s := t.readTestFile()
+	t.Assert().Containsf(s, lvl, "log message should contain level %s", lvl)
+	t.Assert().Containsf(s, msg, "log message should exists in log file")
+}
+
+// Setup the test logger
+func (t *LoggerTests) SetupSuite() {
+	log.Println("SetupSuite()")
+	t.logFile = TESTING_LOGFILE
+	t.testLogger = makeLogger(TESTING_LOGFILE)
+}
+
+// Cleanup test files
+func (t *LoggerTests) TearDownSuite() {
+	log.Println("TearDownSuite()")
+	os.Remove(TESTING_LOGFILE)
+}
+
+// readTestFile reads the content of the test logfile
+func (t *LoggerTests) readTestFile() string {
+	log.Println("readTestFile()")
+	data, err := os.ReadFile(t.logFile)
+	if err != nil {
+		log.Fatalf("readTestFile() error: %v", err)
+	}
+	return string(data)
 }
