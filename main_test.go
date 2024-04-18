@@ -2,13 +2,24 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
+type CityLookupTests struct {
+	suite.Suite
+}
+
+// Run all tests
+func TestCityLookup(t *testing.T) {
+	log.Println("TestCityLookup()")
+	suite.Run(t, new(CityLookupTests))
+}
+
 // Test the city returns a correct city/country code by name
-func TestCityCode(t *testing.T) {
+func (t *CityLookupTests) TestCityCode() {
 
 	testCases := []struct {
 		name        string
@@ -42,34 +53,34 @@ func TestCityCode(t *testing.T) {
 
 	for _, tc := range testCases {
 		res, err := tzCodeFor(tc.name)
-		assert.Nilf(t, err, "should not return error")
-		assert.Equalf(t, tc.expected, res, "expected %s to be %s", tc.expected, res)
-		assert.Equalf(t, tc.numExpected, len(res), "expected %d results, got %d", tc.numExpected, len(res))
+		t.Assert().Nilf(err, "should not return error")
+		t.Assert().Equalf(tc.expected, res, "expected %s to be %s", tc.expected, res)
+		t.Assert().Equalf(tc.numExpected, len(res), "expected %d results, got %d", tc.numExpected, len(res))
 	}
 }
 
 // Test loading the city data from cityMap.json
-func Test_loadCityData(t *testing.T) {
+func (t *CityLookupTests) Test_loadCityData() {
 	data, err := loadCityData()
-	assert.Nilf(t, err, "should load city data without error")
-	assert.NotEmpty(t, data, "data should not be empty")
+	t.Assert().Nilf(err, "should load city data without error")
+	t.Assert().NotEmpty(data, "data should not be empty")
 	Logger.Debug().Msgf("city data: %v", Truncate(fmt.Sprintf("%v", data), 1000))
 }
 
 // Test reading the raw city data from file
-func Test_readCityData(t *testing.T) {
+func (t *CityLookupTests) Test_readCityData() {
 	data, err := readCityData()
-	assert.Nilf(t, err, "read data file failed: %v", err)
-	assert.NotEmptyf(t, data, "data should not be empty")
+	t.Assert().Nilf(err, "read data file failed: %v", err)
+	t.Assert().NotEmptyf(data, "data should not be empty")
 }
 
-func Test_findCityExact(t *testing.T) {
+func (t *CityLookupTests) Test_findCityExact() {
 	data, err := loadCityData()
 	if err != nil {
 		panic(err)
 	}
 	res, err := findCityExact(data, "New York")
-	assert.Nil(t, err)
-	assert.Equalf(t, "New York", res.City, "name should match")
+	t.Assert().Nil(err)
+	t.Assert().Equalf("New York", res.City, "name should match")
 	Logger.Debug().Msgf("city result: %v", res.City)
 }
