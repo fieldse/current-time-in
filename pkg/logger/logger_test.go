@@ -1,5 +1,5 @@
 // Tests for logging functions
-package main
+package logger
 
 import (
 	"log"

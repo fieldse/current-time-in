@@ -1,5 +1,5 @@
 // Logging functions
-package main
+package logger
 
 import (
 	"fmt"

@@ -2,6 +2,8 @@
 package main
 
 import (
+	"github.com/fieldse/current-time-in/pkg/logger"
+
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +11,8 @@ import (
 	"os"
 	"path"
 )
+
+var Logger = logger.Logger
 
 // CityData represents a single entry from the cities data table
 type CityData struct {
