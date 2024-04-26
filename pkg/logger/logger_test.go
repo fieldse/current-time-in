@@ -4,6 +4,7 @@ package logger
 import (
 	"log"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/rs/zerolog"
@@ -29,6 +30,18 @@ type LoggerTests struct {
 func TestLoggerSuite(t *testing.T) {
 	log.Println("TestLoggerSuite()")
 	suite.Run(t, new(LoggerTests))
+}
+
+// TestLogsDir test the logs directory is being correctly resolve
+func (t *LoggerTests) TestLogsDir() {
+	log.Println("TestLogsDir()")
+
+	fp, err := getLogsDir()
+	t.Assert().Nil(err)
+	t.Assert().NotEmpty(fp)
+	t.Assert().True(strings.HasSuffix(fp, "logs"))
+	t.Assert().DirExistsf(fp, "logs directory should exist")
+
 }
 
 // TestLogFileExists test the logfile is created correctly
