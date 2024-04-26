@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-// Regex for nonalphabetical: /[^a-zA-Z\d\s:\u00C0-\u00FF]/g
 // Matches all characters outside the Latin alphabet range, A-Z
-// plus latin characters with diacritics, like "ñ" and "é"
-var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z\d\s:\u00C0-\u00FF]+`)
+// plus latin characters with diacritics, like "ñ" and "é" and spaces.
+// reference: https://gosamples.dev/remove-non-alphanumeric/
+var nonAlphanumericRegex = regexp.MustCompile(`[^\p{L} ]+`)
 
-// replaceNonAlpha removes all non-alphabetic characters from a string
+// replaceNonAlpha removes all non-alphabetic non-space characters from a string
 func replaceNonAlpha(s string) string {
 	return nonAlphanumericRegex.ReplaceAllString(s, "")
 }
