@@ -2,6 +2,8 @@
 package citylookup
 
 import (
+	"strings"
+
 	"github.com/fieldse/current-time-in/pkg/logger"
 	"github.com/fieldse/current-time-in/shared"
 
@@ -68,4 +70,18 @@ func findCityExact(rows []CityData, s string) (CityData, error) {
 		}
 	}
 	return CityData{}, fmt.Errorf("city not found: %s", s)
+}
+
+// filterByCountry filters cities by country name on a case-insensitive substring match
+// example: "united" would return "United States" and "United Kingdom"
+func filterByCountry(rows []CityData, countryName string) []CityData {
+	var filtered []CityData
+	countryName = strings.ToLower(countryName)
+	for _, r := range rows {
+		s := strings.ToLower(r.Country)
+		if strings.Contains(s, countryName) {
+			filtered = append(filtered, r)
+		}
+	}
+	return filtered
 }
