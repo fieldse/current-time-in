@@ -11,7 +11,7 @@ import (
 
 type CityLookupTests struct {
 	suite.Suite
-	cityData []CityData
+	cityData []CityRow
 }
 
 // Run all tests

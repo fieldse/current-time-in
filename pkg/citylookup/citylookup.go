@@ -11,8 +11,8 @@ import (
 
 var Logger = logger.Logger
 
-// CityData represents a single entry from the cities data table
-type CityData struct {
+// CityRow represents a single entry from the cities data table
+type CityRow struct {
 	City      string  `json:"city"`
 	CityAscii string  `json:"city_ascii"`
 	Lat       float32 `json:"lat"`
@@ -26,19 +26,19 @@ type CityData struct {
 }
 
 // findCityExact finds a single city matching exactly by name
-func findCityExact(rows []CityData, s string) (CityData, error) {
+func findCityExact(rows []CityRow, s string) (CityRow, error) {
 	for _, r := range rows {
 		if r.City == s {
 			return r, nil
 		}
 	}
-	return CityData{}, fmt.Errorf("city not found: %s", s)
+	return CityRow{}, fmt.Errorf("city not found: %s", s)
 }
 
 // filterByCountry filters cities by country name on a case-insensitive substring match
 // example: "united" would return "United States" and "United Kingdom"
-func filterByCountry(rows []CityData, countryName string) []CityData {
-	var filtered []CityData
+func filterByCountry(rows []CityRow, countryName string) []CityRow {
+	var filtered []CityRow
 	countryName = strings.ToLower(countryName)
 	for _, r := range rows {
 		s := strings.ToLower(r.Country)
@@ -55,8 +55,8 @@ func filterByCountry(rows []CityData, countryName string) []CityData {
 // If no match is found by exact city name, it will try to match based on fuzzy search
 // against country name and city/country combination
 // eg: "London", "London UK", "London United Kingdom" should all return the same result.
-func filterFuzzyCityCountryName(rows []CityData, s string) ([]CityData, error) {
-	var filtered []CityData
+func filterFuzzyCityCountryName(rows []CityRow, s string) ([]CityRow, error) {
+	var filtered []CityRow
 
 	// Exact match by name
 	exactMatch, err := findCityExact(rows, s)
@@ -85,5 +85,5 @@ func filterFuzzyCityCountryName(rows []CityData, s string) ([]CityData, error) {
 		}
 	}
 
-	return []CityData{}, fmt.Errorf("no match found for %s", s)
+	return []CityRow{}, fmt.Errorf("no match found for %s", s)
 }
