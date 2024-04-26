@@ -82,6 +82,47 @@ func (t *CityLookupTests) Test_findCityExact() {
 	Logger.Debug().Msgf("city result: %v", res.City)
 }
 
+func (t *CityLookupTests) Test_filterByCountry() {
+	var cityNames []string
+	var expectedCities = []string{"Denver", "Houston", "Miami", "Atlanta", "Chicago",
+		"Los Angeles", "Washington, D.C.", "New York"}
+
+	// Filter by united states
+	res := filterByCountry(t.cityData, "United States")
+	t.Assert().NotEmptyf(res, "results should not be empty")
+
+	// Aggregate results
+	for _, city := range res {
+		cityNames = append(cityNames, city.City)
+	}
+
+	// Confirm expected cities in results
+	for _, c := range expectedCities {
+		t.Assert().Containsf(cityNames, c, "filtered list should contain %s", c)
+	}
+
+	// Filter by nonexistent
+	res = filterByCountry(t.cityData, "foobar")
+	t.Assert().Emptyf(res, "nonexistent should be empty")
+
+	// Filter by lowercase and partial match
+	res = filterByCountry(t.cityData, "united")
+	t.Assert().NotEmptyf(res, "results should not be empty")
+
+	cityNames = []string{}
+	expectedCities = []string{"New York", "London"}
+
+	// Aggregate results
+	for _, city := range res {
+		cityNames = append(cityNames, city.City)
+	}
+
+	// Confirm expected cities in results
+	for _, c := range expectedCities {
+		t.Assert().Containsf(cityNames, c, "filtered list should contain %s", c)
+	}
+}
+
 // Load the city data once for test suite
 func (t *CityLookupTests) SetupSuite() {
 	data, err := loadCityData()
