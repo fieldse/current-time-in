@@ -54,7 +54,7 @@ func (t *CityLookupTests) TestCityCode() {
 	}
 
 	for _, tc := range testCases {
-		res, err := tzCodeFor(tc.name)
+		res, err := filterByTZCode(t.cityData, tc.name)
 		t.Assert().Nilf(err, "should not return error")
 		t.Assert().Equalf(tc.expected, res, "expected %s to be %s", tc.expected, res)
 		t.Assert().Equalf(tc.numExpected, len(res), "expected %d results, got %d", tc.numExpected, len(res))
