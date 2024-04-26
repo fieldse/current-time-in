@@ -10,6 +10,7 @@ import (
 
 type CityLookupTests struct {
 	suite.Suite
+	cityData []CityData
 }
 
 // Run all tests
@@ -75,12 +76,17 @@ func (t *CityLookupTests) Test_readCityData() {
 }
 
 func (t *CityLookupTests) Test_findCityExact() {
-	data, err := loadCityData()
-	if err != nil {
-		panic(err)
-	}
-	res, err := findCityExact(data, "New York")
+	res, err := findCityExact(t.cityData, "New York")
 	t.Assert().Nil(err)
 	t.Assert().Equalf("New York", res.City, "name should match")
 	Logger.Debug().Msgf("city result: %v", res.City)
+}
+
+// Load the city data once for test suite
+func (t *CityLookupTests) SetupSuite() {
+	data, err := loadCityData()
+	if err != nil {
+		panic("load testing data failed: %s" + err.Error())
+	}
+	t.cityData = data
 }
