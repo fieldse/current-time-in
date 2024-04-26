@@ -16,6 +16,28 @@ import (
 
 var Logger = logger.Logger
 
+var (
+	DataDirectory string
+	DataJSONFile  string
+)
+
+// Set the data directory
+func init() {
+	rootDir := getProjectRootDir()
+	p := path.Join(rootDir, "data")
+	if !Exists(p) {
+		panic(fmt.Sprintf("data directory %s not found", p))
+	}
+	DataDirectory = p
+	DataJSONFile = path.Join(p, "cityMap.json")
+}
+
+// Return path to the project root directory --
+func getProjectRootDir() string {
+	curDir, _ := os.Getwd()
+	return path.Dir(path.Dir(curDir))
+}
+
 // CityData represents a single entry from the cities data table
 type CityData struct {
 	City      string  `json:"city"`
@@ -41,7 +63,7 @@ func tzCodeFor(_ string) ([]string, error) {
 
 // readCityData reads the raw data from cityMap.json to bytes
 func readCityData() ([]byte, error) {
-	b, err := os.ReadFile(path.Join(".", "data", "cityMap.json"))
+	b, err := os.ReadFile(DataJSONFile)
 	if err != nil {
 		log.Printf("failed to read cityMap.json: %v", err)
 	}
