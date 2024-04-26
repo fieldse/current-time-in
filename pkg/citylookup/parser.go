@@ -21,7 +21,7 @@ func replaceNonAlpha(s string) string {
 // with combined values from city, country, province, and iso2,3 codes.
 // Used for matching against fuzzy search
 func parseSearchIndexRows(rows []CityRow) ([]CityRow, error) {
-	newRows := make([]CityRow, len(rows))
+	var newRows []CityRow
 	for _, r := range rows {
 		// generate search string
 		searchString, err := parseSearchableString(r)
