@@ -22,7 +22,14 @@ type CityRow struct {
 	Iso2      any     `json:"iso2"` // these sometimes will be "-99" for no obvious reason
 	Iso3      string  `json:"iso3"`
 	Province  string  `json:"province"`
+	StateAnsi string  `json:"state_ansi"`
 	Timezone  string  `json:"timezone"`
+
+	// unclear how these differ from City/Province, but included in some rows
+	ExactCity     string `json:"exactCity"`
+	ExactProvince string `json:"exactProvince"`
+
+	SearchString string // this wil be indexed as city/country/province/iso2,3 combination for fuzzy search
 }
 
 // findCityExact finds a single city matching exactly by name
