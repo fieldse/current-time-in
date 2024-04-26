@@ -2,15 +2,14 @@
 package main
 
 import (
-	"github.com/fieldse/current-time-in/pkg/citylookup"
+	"github.com/fieldse/current-time-in/pkg/cli"
+	"github.com/rs/zerolog/log"
 )
-
-var Logger = citylookup.Logger
 
 func main() {
 	var args []string // fixme: get from sys.argv
-	err := citylookup.RunCLI(args)
+	err := cli.RunCLI(args)
 	if err != nil {
-		Logger.Fatal().Err(err).Msgf("CLI failed")
+		log.Fatal().Msg("CLI failed")
 	}
 }
