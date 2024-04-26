@@ -3,6 +3,7 @@ package citylookup
 
 import (
 	"github.com/fieldse/current-time-in/pkg/logger"
+	"github.com/fieldse/current-time-in/shared"
 
 	"encoding/json"
 	"fmt"
@@ -33,7 +34,7 @@ type CityData struct {
 // eg: "London", "London UK", "London United Kingdom" should all return the same result.
 // This will return a slice of results for cities which exist in multiple countries.
 func tzCodeFor(_ string) ([]string, error) {
-	return []string{""}, ErrorNotImplementedError{}
+	return []string{""}, shared.ErrorNotImplementedError{}
 }
 
 // readCityData reads the raw data from cityMap.json to bytes
@@ -67,9 +68,4 @@ func findCityExact(rows []CityData, s string) (CityData, error) {
 		}
 	}
 	return CityData{}, fmt.Errorf("city not found: %s", s)
-}
-
-// Run
-func RunCLI(args []string) error {
-	return ErrorNotImplementedError{}
 }
