@@ -41,15 +41,15 @@ func readCityData() ([]byte, error) {
 }
 
 // loadCityData loads the city data from cityMap.json
-func loadCityData() ([]CityData, error) {
-	var cityData []CityData
+func loadCityData() ([]CityRow, error) {
+	var cityData []CityRow
 	b, err := readCityData()
 	if err != nil {
-		return []CityData{}, fmt.Errorf("failed to read city data: %w", err)
+		return []CityRow{}, fmt.Errorf("failed to read city data: %w", err)
 	}
 	err = json.Unmarshal(b, &cityData)
 	if err != nil {
-		return []CityData{}, fmt.Errorf("error parsing city data: %w", err)
+		return []CityRow{}, fmt.Errorf("error parsing city data: %w", err)
 	}
 	return cityData, nil
 }
