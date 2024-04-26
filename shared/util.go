@@ -1,5 +1,5 @@
 // Miscellaneous small helpers
-package citylookup
+package shared
 
 import "os"
 
