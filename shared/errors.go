@@ -1,5 +1,5 @@
 // Custom error types
-package citylookup
+package shared
 
 type ErrorNotImplementedError struct{}
 
