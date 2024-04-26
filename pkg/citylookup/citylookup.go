@@ -25,9 +25,7 @@ var (
 func init() {
 	rootDir := getProjectRootDir()
 	p := path.Join(rootDir, "data")
-	if !shared.Exists(p) {
-		panic(fmt.Sprintf("data directory %s not found", p))
-	}
+	shared.ExistsOrPanic(p) // validate the data directory exists or panic
 	DataDirectory = p
 	DataJSONFile = path.Join(p, "cityMap.json")
 }
