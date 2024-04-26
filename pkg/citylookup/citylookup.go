@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/fieldse/current-time-in/pkg/logger"
-	"github.com/fieldse/current-time-in/shared"
 
 	"fmt"
 )
@@ -50,12 +49,41 @@ func filterByCountry(rows []CityData, countryName string) []CityData {
 	return filtered
 }
 
-// filterByTZCode filters the cities data by fuzzing matching against the given city/country
-// name combination
+// filterFuzzyCityCountryName filters the cities data by fuzzing matching against the given
+// city/country name combination
 // If an exact match by city name is found, it returns immediately.
 // If no match is found by exact city name, it will try to match based on fuzzy search
 // against country name and city/country combination
 // eg: "London", "London UK", "London United Kingdom" should all return the same result.
-func filterByTZCode(rows []CityData, s string) ([]string, error) {
-	return []string{""}, shared.ErrorNotImplementedError{}
+func filterFuzzyCityCountryName(rows []CityData, s string) ([]CityData, error) {
+	var filtered []CityData
+
+	// Exact match by name
+	exactMatch, err := findCityExact(rows, s)
+	if err == nil { // if we have exact match, return immediately
+		filtered = append(filtered, exactMatch)
+		return filtered, nil
+	}
+
+	// If no name match, see if we can split out a country name
+	logger.Logger.Info().Msgf("no exact match found for city name. Attempting fuzzy match")
+
+	words := strings.Split(s, "")
+	numWords := len(words)
+	if numWords > 1 { // we have more than one word
+		for i := 0; i < numWords; i++ {
+			index := numWords - i
+			lastItem := words[index]
+			logger.Logger.Info().Msgf("attempting match for country name on %s", lastItem)
+
+			byCountry := filterByCountry(rows, lastItem)
+			if len(byCountry) > 0 {
+				logger.Logger.Info().Msgf("got %d matches by country name", len(byCountry))
+				return byCountry, nil
+
+			}
+		}
+	}
+
+	return []CityData{}, fmt.Errorf("no match found for %s", s)
 }
