@@ -25,7 +25,7 @@ var (
 func init() {
 	rootDir := getProjectRootDir()
 	p := path.Join(rootDir, "data")
-	if !Exists(p) {
+	if !shared.Exists(p) {
 		panic(fmt.Sprintf("data directory %s not found", p))
 	}
 	DataDirectory = p

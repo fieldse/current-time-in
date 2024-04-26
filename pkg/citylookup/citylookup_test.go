@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/fieldse/current-time-in/shared"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -65,7 +66,7 @@ func (t *CityLookupTests) Test_loadCityData() {
 	data, err := loadCityData()
 	t.Assert().Nilf(err, "should load city data without error")
 	t.Assert().NotEmpty(data, "data should not be empty")
-	Logger.Debug().Msgf("city data: %v", Truncate(fmt.Sprintf("%v", data), 1000))
+	Logger.Debug().Msgf("city data: %v", shared.Truncate(fmt.Sprintf("%v", data), 1000))
 }
 
 // Test reading the raw city data from file
